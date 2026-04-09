@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAKEOVR — Client Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0E0E10;
+    --bg-warm: #F9F8F6;
+    --bg-card: #FFFFFF;
+    --accent: #B09070;
+    --accent-hover: #9A7B5E;
+    --accent-soft: #F5F0EB;
+    --text-primary: #1A1A1A;
+    --text-secondary: #6B6B6B;
+    --text-light: #9C9C9C;
+    --text-on-dark: #F5F3F0;
+    --border: #E5E3E0;
+    --border-focus: #B09070;
+    --success: #16A34A;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', -apple-system, sans-serif;
+    --radius: 12px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+  }
+
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--text-primary);
+    background: var(--bg-warm);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--bg-dark);
+    color: var(--text-on-dark);
+    padding: 80px 24px 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(176,144,112,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(176,144,112,0.04) 0%, transparent 50%);
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(-3%, 2%) rotate(1deg); }
+  }
+
+  .hero-content { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 40px;
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero p {
+    font-size: 17px;
+    color: rgba(255,255,255,0.55);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .hero-meta span { display: flex; align-items: center; gap: 8px; }
+
+  .hero-meta svg { width: 14px; height: 14px; opacity: 0.5; }
+
+  /* ─── PROGRESS ─── */
+  .progress-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,247,245,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    transition: box-shadow 0.3s;
+  }
+
+  .progress-container.scrolled { box-shadow: var(--shadow-sm); }
+
+  .progress-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 0;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    min-width: 80px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+
+  .progress-fraction {
+    font-size: 12px;
+    color: var(--text-light);
+    font-variant-numeric: tabular-nums;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* ─── FORM LAYOUT ─── */
+  .form-wrapper {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+
+  .form-section {
+    display: none;
+    animation: fadeUp 0.4s ease-out;
+  }
+
+  .form-section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-number {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .section-header h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .section-header p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    line-height: 1.7;
+  }
+
+  /* ─── FORM FIELDS ─── */
+  .field-group {
+    margin-bottom: 32px;
+  }
+
+  .field-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .field-group .hint {
+    display: block;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
+
+  .field-group input[type="text"],
+  .field-group input[type="email"],
+  .field-group input[type="url"],
+  .field-group input[type="number"],
+  .field-group textarea,
+  .field-group select {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field-group input:focus,
+  .field-group textarea:focus,
+  .field-group select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .field-group textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  .field-group textarea.short { min-height: 80px; }
+
+  /* Checkbox group */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    font-size: 14px;
+    user-select: none;
+  }
+
+  .checkbox-item:hover { border-color: var(--text-light); }
+
+  .checkbox-item.checked {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ─── NAVIGATION ─── */
+  .nav-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    margin-left: auto;
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+  }
+
+  .btn-secondary:hover { border-color: var(--text-light); color: var(--text-primary); }
+
+  .btn-submit {
+    background: var(--bg-dark);
+    color: white;
+    margin-left: auto;
+    padding: 16px 36px;
+    font-size: 15px;
+  }
+
+  .btn-submit:hover { background: #1C1917; transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+
+  .btn svg { width: 16px; height: 16px; }
+
+  /* ─── SUCCESS STATE ─── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 120px 24px;
+    max-width: 560px;
+    margin: 0 auto;
+    animation: fadeUp 0.5s ease-out;
+  }
+
+  .success-screen.active { display: block; }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: #ECFDF5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 32px;
+  }
+
+  .success-icon svg { width: 32px; height: 32px; color: var(--success); }
+
+  .success-screen h2 {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  .success-screen p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 80px; }
+    .hero-meta { gap: 24px; flex-wrap: wrap; justify-content: center; }
+    .form-wrapper { padding: 32px 20px 100px; }
+    .checkbox-grid { grid-template-columns: 1fr; }
+    .nav-buttons { flex-wrap: wrap; }
+    .btn-primary, .btn-submit { margin-left: 0; width: 100%; justify-content: center; }
+    .btn-secondary { width: 100%; justify-content: center; }
+  }
+
+  /* ─── DIVIDER ─── */
+  .field-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+  }
+
+  /* Save indicator */
+  .autosave-notice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 8px;
+  }
+
+  .autosave-notice svg { width: 12px; height: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ━━━ HERO ━━━ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      TAKEOVR Client Onboarding
+    </div>
+    <h1>Let's build something <em>extraordinary</em></h1>
+    <p>We need to understand your brand, your customers, and your vision. The more you share here, the better your new website and marketing will be.</p>
+    <div class="hero-meta">
+      <span>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        15–20 min
+      </span>
+      <span>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Auto-saves progress
+      </span>
+      <span>
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Private &amp; secure
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ━━━ PROGRESS BAR ━━━ -->
+<div class="progress-container" id="progressContainer">
+  <div class="progress-inner">
+    <span class="progress-label" id="progressLabel">Brand</span>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-fraction" id="progressFraction">1/8</span>
+  </div>
+</div>
+
+<!-- ━━━ FORM ━━━ -->
+<div class="form-wrapper">
+  <form id="onboardingForm" action="https://formsubmit.co/owenhenryrussell@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="SOEL Onboarding — Shelby's Answers">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value=""><!-- will be set by JS -->
+
+    <!-- SECTION 1: BRAND -->
+    <div class="form-section active" data-section="1" data-label="Brand">
+      <div class="section-header">
+        <span class="section-number">Section 01</span>
+        <h2>Your Brand</h2>
+        <p>Help us understand the soul of your business — who you are, what you stand for, and the feeling you create.</p>
+      </div>
+
+      <div class="field-group">
+        <label>Describe your brand in 3 words</label>
+        <span class="hint">What feeling should someone get the moment they land on your website?</span>
+        <input type="text" name="brand_3_words" placeholder="e.g. Warm, Elevated, Effortless">
+      </div>
+
+      <div class="field-group">
+        <label>Who is your dream customer?</label>
+        <span class="hint">Her age, lifestyle, what she does on a Saturday afternoon, where else she shops</span>
+        <textarea name="dream_customer" placeholder="Tell us about her..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What makes you different from other boutiques?</label>
+        <span class="hint">What do your loyal customers say about you that they wouldn't say about another store?</span>
+        <textarea name="differentiator" placeholder="The thing that makes people come back..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Drop 3–5 website links you love</label>
+        <span class="hint">Fashion or not — tell us what specifically you like about each one</span>
+        <textarea name="inspiration_sites" placeholder="https://... — I love the clean layout&#10;https://... — The photography feels so luxe&#10;https://... — Easy to shop on mobile"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Any websites you hate? What turns you off?</label>
+        <textarea name="disliked_sites" class="short" placeholder="Cluttered, too many popups, hard to find things..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Is your current logo final, or are you open to a refresh?</label>
+        <span class="hint">Same question for your brand colors</span>
+        <textarea name="logo_status" class="short" placeholder="Love the logo but open to updating colors..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 2: PRODUCTS -->
+    <div class="form-section" data-section="2" data-label="Products">
+      <div class="section-header">
+        <span class="section-number">Section 02</span>
+        <h2>Products &amp; Inventory</h2>
+        <p>Understanding what you sell and how your inventory works is essential for building the right online experience.</p>
+      </div>
+
+      <div class="field-group">
+        <label>How many products do you currently carry?</label>
+        <span class="hint">Rough number is fine — in-store total</span>
+        <input type="text" name="product_count" placeholder="e.g. Around 200">
+      </div>
+
+      <div class="field-group">
+        <label>What are your main product categories?</label>
+        <span class="hint">List them all — dresses, tops, jewelry, bags, etc.</span>
+        <textarea name="categories" class="short" placeholder="Dresses, Tops, Bottoms, Jewelry, Bags, Accessories..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Which categories are your best sellers?</label>
+        <span class="hint">Both in-store and online — are they different?</span>
+        <textarea name="bestsellers" class="short" placeholder="In-store: dresses and jewelry. Online: bags and tops..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you do seasonal collections/drops or rolling inventory?</label>
+        <span class="hint">How often do you get new product in?</span>
+        <textarea name="inventory_cadence" class="short" placeholder="New arrivals every 2 weeks, seasonal collections 4x/year..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you carry any exclusive brands or private label?</label>
+        <textarea name="exclusive_brands" class="short" placeholder="We're the only local boutique that carries..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What's your price range?</label>
+        <span class="hint">Lowest to highest, and where most items fall</span>
+        <input type="text" name="price_range" placeholder="e.g. $12 – $200, most items $40–$80">
+      </div>
+
+      <div class="field-group">
+        <label>Do you have good product photography for everything?</label>
+        <span class="hint">Or do we need to plan a shoot?</span>
+        <textarea name="photography_status" class="short" placeholder="We have photos for most items but some newer stuff needs shooting..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 3: CURRENT ONLINE -->
+    <div class="form-section" data-section="3" data-label="Current Site">
+      <div class="section-header">
+        <span class="section-number">Section 03</span>
+        <h2>Your Current Online Business</h2>
+        <p>We need to understand where you're starting from so we can measure the growth.</p>
+      </div>
+
+      <div class="field-group">
+        <label>What's your current website URL?</label>
+        <input type="url" name="current_url" placeholder="https://soelboutique.com">
+      </div>
+
+      <div class="field-group">
+        <label>What do you currently sell per month online?</label>
+        <span class="hint">Even a rough range — this is how we measure our 8x goal</span>
+        <input type="text" name="monthly_revenue" placeholder="e.g. Around $2,000-3,000/month">
+      </div>
+
+      <div class="field-group">
+        <label>Where does your online traffic come from?</label>
+        <span class="hint">Instagram, Google, email, word of mouth, ads?</span>
+        <textarea name="traffic_sources" class="short" placeholder="Mostly Instagram, some Google, a little from email..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you have an email list? How many subscribers?</label>
+        <input type="text" name="email_list" placeholder="e.g. Yes, about 3,000 on Klaviyo">
+      </div>
+
+      <div class="field-group">
+        <label>What's your biggest frustration with the current website?</label>
+        <textarea name="current_frustrations" placeholder="Be honest — no wrong answers..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 4: LIGHTSPEED & SHOPIFY -->
+    <div class="form-section" data-section="4" data-label="Inventory">
+      <div class="section-header">
+        <span class="section-number">Section 04</span>
+        <h2>In-Store &amp; Online Inventory</h2>
+        <p>We're connecting your physical store to the online world. This section helps us get the integration right.</p>
+      </div>
+
+      <div class="field-group">
+        <label>Which LightSpeed product are you using?</label>
+        <span class="hint">LightSpeed Retail, eCom, Restaurant, etc.</span>
+        <input type="text" name="lightspeed_product" placeholder="e.g. LightSpeed Retail">
+      </div>
+
+      <div class="field-group">
+        <label>Is your in-store inventory fully tracked in LightSpeed?</label>
+        <span class="hint">Are the quantities accurate in real-time?</span>
+        <textarea name="inventory_accuracy" class="short" placeholder="Yes, pretty accurate — we scan everything in..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Should the online store show real-time in-store inventory?</label>
+        <span class="hint">Or would you rather maintain separate online stock?</span>
+        <textarea name="inventory_sync" class="short" placeholder="I'd love to show everything online but worry about overselling..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What happens when something sells in-store but is listed online?</label>
+        <span class="hint">Auto-remove? Show "sold out"? "Available in store only"?</span>
+        <textarea name="sold_out_handling" class="short" placeholder="Right now nothing happens and that's a problem..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you use LightSpeed for anything else?</label>
+        <span class="hint">Loyalty program, gift cards, customer profiles, reporting?</span>
+        <textarea name="lightspeed_features" class="short" placeholder="Gift cards and basic customer info..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 5: FEATURES -->
+    <div class="form-section" data-section="5" data-label="Features">
+      <div class="section-header">
+        <span class="section-number">Section 05</span>
+        <h2>Website Features</h2>
+        <p>Check everything that matters to you. We'll prioritize based on what drives the most revenue.</p>
+      </div>
+
+      <div class="field-group">
+        <label>Must-have features — check all that apply</label>
+        <div class="checkbox-grid" id="featureGrid">
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="search_filter"> Search &amp; filtering (size, color, price)</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="shop_the_look"> "Shop the Look" outfit bundles</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="wishlist"> Wishlist / favorites</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="size_guide"> Size guide</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="reviews"> Customer reviews on products</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="gift_cards"> Gift cards</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="loyalty"> Loyalty / rewards program</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="store_info"> Store locator &amp; info page</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="blog"> Blog / journal / editorial</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="about"> About Us / Our Story</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="instagram_feed"> Instagram feed on site</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="email_popup"> Email signup popup</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="live_chat"> Live chat / support widget</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="bnpl"> Afterpay / Klarna / BNPL</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="bopis"> Buy online, pick up in store</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="styling"> Appointment booking (styling)</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="sms"> SMS / text marketing</label>
+          <label class="checkbox-item"><input type="checkbox" name="features[]" value="referral"> Referral program</label>
+        </div>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label>Any features you've seen on other sites that you loved?</label>
+        <textarea name="dream_features" class="short" placeholder="I saw this thing on Anthropologie where..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you want to highlight the physical store on the site?</label>
+        <span class="hint">Photos of the space, events, directions, hours?</span>
+        <textarea name="physical_store" class="short" placeholder="Yes! The store is beautiful and people love coming in..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 6: CUSTOMER EXPERIENCE -->
+    <div class="form-section" data-section="6" data-label="Experience">
+      <div class="section-header">
+        <span class="section-number">Section 06</span>
+        <h2>The Customer Experience</h2>
+        <p>We want to recreate the magic of your physical store in the online world.</p>
+      </div>
+
+      <div class="field-group">
+        <label>Describe the experience when someone walks into your store</label>
+        <span class="hint">What do they see, feel, hear? We want to capture that energy online.</span>
+        <textarea name="store_experience" placeholder="When you walk in, the first thing you notice is..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What questions do customers ask most often?</label>
+        <span class="hint">About sizing, shipping, returns, styling?</span>
+        <textarea name="common_questions" class="short" placeholder="Does this run true to size? Can you ship this to me?..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What's your return policy?</label>
+        <textarea name="return_policy" class="short" placeholder="30 days on full-price, sale items final..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What shipping options do you want to offer?</label>
+        <span class="hint">Free shipping threshold? Local delivery? Flat rate?</span>
+        <textarea name="shipping_options" class="short" placeholder="Free over $75, flat $8 under that..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you offer personal styling or concierge service?</label>
+        <span class="hint">If yes, should we promote it on the site?</span>
+        <textarea name="styling_service" class="short" placeholder="We do in-store styling appointments and would love to offer virtual..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 7: MARKETING -->
+    <div class="form-section" data-section="7" data-label="Marketing">
+      <div class="section-header">
+        <span class="section-number">Section 07</span>
+        <h2>Marketing &amp; Growth</h2>
+        <p>Understanding what you've tried and what's working helps us build on your strengths.</p>
+      </div>
+
+      <div class="field-group">
+        <label>What's your Instagram handle and follower count?</label>
+        <input type="text" name="instagram" placeholder="@soelboutique — 104K followers">
+      </div>
+
+      <div class="field-group">
+        <label>Are you on TikTok? What's working there?</label>
+        <textarea name="tiktok" class="short" placeholder="Just started, not sure what works yet..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you currently run any paid ads?</label>
+        <span class="hint">Meta/Instagram, Google, TikTok? Monthly budget?</span>
+        <textarea name="paid_ads" class="short" placeholder="Some boosted posts on Instagram, maybe $200/month..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>What's been your most successful marketing effort ever?</label>
+        <span class="hint">A post that went viral, a sale that crushed, an event that packed the store?</span>
+        <textarea name="best_marketing" placeholder="That one time we..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you send email campaigns? How often? What tool?</label>
+        <input type="text" name="email_marketing" placeholder="e.g. Klaviyo, twice a month">
+      </div>
+
+      <div class="field-group">
+        <label>Any upcoming events, launches, or seasonal moments?</label>
+        <span class="hint">Spring collection, anniversary, holiday, workshop?</span>
+        <textarea name="upcoming_events" class="short" placeholder="We have a floral workshop coming up, and summer collection drops in May..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="button" class="btn btn-primary" onclick="nextSection()">
+          Continue
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SECTION 8: THE GOAL + CONTENT + LOGISTICS -->
+    <div class="form-section" data-section="8" data-label="The Goal">
+      <div class="section-header">
+        <span class="section-number">Section 08</span>
+        <h2>The Goal &amp; Next Steps</h2>
+        <p>The final stretch — your vision for growth, content readiness, and logistics.</p>
+      </div>
+
+      <div class="field-group">
+        <label>What do you think stops people from buying online from you?</label>
+        <span class="hint">Be brutally honest — no wrong answers</span>
+        <textarea name="purchase_barriers" placeholder="Maybe they can't find what they want, or the site feels outdated..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>If we could fix ONE thing about your online experience, what would make the biggest difference?</label>
+        <textarea name="one_fix" class="short" placeholder="If only we could..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Would you do online-exclusive drops or limited releases to drive urgency?</label>
+        <textarea name="exclusives" class="short" placeholder="Love that idea — or — not sure if that fits our brand..."></textarea>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label>Do you have professional product photography?</label>
+        <span class="hint">On models? Flat-lay? Lifestyle? Do we need a shoot?</span>
+        <textarea name="photo_assets" class="short" placeholder="We have model shots for most items, some flat-lays..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Are you comfortable being the face of the brand online?</label>
+        <span class="hint">Behind the scenes, "Shelby's Picks," styling tips, etc.</span>
+        <textarea name="founder_content" class="short" placeholder="I love being in the content — or — I prefer to stay behind the scenes..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Do you have photos or video of your physical store?</label>
+        <textarea name="store_assets" class="short" placeholder="Tons of photos, a few videos from events..."></textarea>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="field-group">
+        <label>Who will manage the website day-to-day?</label>
+        <input type="text" name="site_manager" placeholder="e.g. Me, Owen, or a team member">
+      </div>
+
+      <div class="field-group">
+        <label>Is there a hard deadline for the new site?</label>
+        <span class="hint">An event, season, or date driving the timeline?</span>
+        <input type="text" name="deadline" placeholder="e.g. Before summer, ASAP, by May 1st">
+      </div>
+
+      <div class="field-group">
+        <label>Anything else on your mind that we didn't ask?</label>
+        <textarea name="anything_else" placeholder="If you've been thinking it, write it down..."></textarea>
+      </div>
+
+      <div class="nav-buttons">
+        <button type="button" class="btn btn-secondary" onclick="prevSection()">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <button type="submit" class="btn btn-submit">
+          Submit Onboarding
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- ━━━ SUCCESS ━━━ -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <h2>You're all set</h2>
+    <p>Thank you for taking the time to share all of this. We have everything we need to start building your new website and marketing strategy. Owen will be in touch soon with next steps.</p>
+  </div>
+</div>
+
+<script>
+  let currentSection = 1;
+  const totalSections = 8;
+  const STORAGE_KEY = 'takeovr_onboarding_soel';
+
+  function updateProgress() {
+    const fill = document.getElementById('progressFill');
+    const label = document.getElementById('progressLabel');
+    const fraction = document.getElementById('progressFraction');
+    const active = document.querySelector('.form-section.active');
+
+    fill.style.width = `${(currentSection / totalSections) * 100}%`;
+    fraction.textContent = `${currentSection}/${totalSections}`;
+    if (active) label.textContent = active.dataset.label;
+  }
+
+  function showSection(n) {
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    const target = document.querySelector(`[data-section="${n}"]`);
+    if (target) {
+      target.classList.add('active');
+      currentSection = n;
+      updateProgress();
+      window.scrollTo({ top: document.querySelector('.progress-container').offsetTop, behavior: 'smooth' });
+      saveProgress();
+    }
+  }
+
+  function nextSection() { if (currentSection < totalSections) showSection(currentSection + 1); }
+  function prevSection() { if (currentSection > 1) showSection(currentSection - 1); }
+
+  // Checkbox toggle styling
+  document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      cb.closest('.checkbox-item').classList.toggle('checked', cb.checked);
+      saveProgress();
+    });
+  });
+
+  // Auto-save to localStorage
+  function saveProgress() {
+    const form = document.getElementById('onboardingForm');
+    const data = {};
+    new FormData(form).forEach((val, key) => {
+      if (data[key]) {
+        if (!Array.isArray(data[key])) data[key] = [data[key]];
+        data[key].push(val);
+      } else {
+        data[key] = val;
+      }
+    });
+    data._currentSection = currentSection;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function loadProgress() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      const form = document.getElementById('onboardingForm');
+      Object.entries(data).forEach(([key, val]) => {
+        if (key === '_currentSection') return;
+        if (key === 'features[]') {
+          const vals = Array.isArray(val) ? val : [val];
+          form.querySelectorAll('input[name="features[]"]').forEach(cb => {
+            if (vals.includes(cb.value)) {
+              cb.checked = true;
+              cb.closest('.checkbox-item').classList.add('checked');
+            }
+          });
+        } else {
+          const el = form.querySelector(`[name="${key}"]`);
+          if (el) el.value = val;
+        }
+      });
+      if (data._currentSection) showSection(data._currentSection);
+    } catch(e) {}
+  }
+
+  // Save on every input
+  document.getElementById('onboardingForm').addEventListener('input', saveProgress);
+
+  // Form submission
+  document.getElementById('onboardingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Collect all data
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((val, key) => {
+      if (data[key]) {
+        if (!Array.isArray(data[key])) data[key] = [data[key]];
+        data[key].push(val);
+      } else {
+        data[key] = val;
+      }
+    });
+
+    // Submit via formsubmit.co
+    fetch(this.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    }).then(res => {
+      document.getElementById('onboardingForm').style.display = 'none';
+      document.getElementById('progressContainer').style.display = 'none';
+      document.getElementById('successScreen').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      localStorage.removeItem(STORAGE_KEY);
+    }).catch(() => {
+      // Fallback: submit normally
+      this.submit();
+    });
+  });
+
+  // Sticky shadow on scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('progressContainer')
+      .classList.toggle('scrolled', window.scrollY > 400);
+  });
+
+  // Init
+  updateProgress();
+  loadProgress();
+</script>
+
+</body>
+</html>
