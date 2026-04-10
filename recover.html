@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Recover Your Answers</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: #F9F8F6;
+    color: #1A1A1A;
+    padding: 40px 20px;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: #6B6B6B;
+    font-size: 16px;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .step {
+    background: #fff;
+    border: 1.5px solid #E5E3E0;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .step-number {
+    display: inline-block;
+    background: #B09070;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 32px;
+    font-weight: 600;
+    margin-right: 12px;
+    font-size: 16px;
+  }
+  .step h2 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+  }
+  .step p {
+    color: #6B6B6B;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  textarea {
+    width: 100%;
+    height: 400px;
+    padding: 16px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 13px;
+    border: 1.5px solid #E5E3E0;
+    border-radius: 12px;
+    resize: vertical;
+    line-height: 1.5;
+    background: #fff;
+    color: #1A1A1A;
+    margin-top: 12px;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: #B09070;
+    box-shadow: 0 0 0 3px #F5F0EB;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: #1A1A1A;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: #000; }
+  .btn.copied { background: #16A34A; }
+  .empty {
+    background: #FEF3C7;
+    border: 1.5px solid #FCD34D;
+    border-radius: 12px;
+    padding: 24px;
+    color: #92400E;
+    line-height: 1.7;
+  }
+  .empty h2 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: #78350F;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Recover Your Answers</h1>
+  <p class="subtitle">All your answers are saved in your browser. This page pulls them out so you can send them to Owen.</p>
+
+  <div id="foundAnswers" style="display:none;">
+    <div class="step">
+      <h2><span class="step-number">1</span> Your answers</h2>
+      <p>All your answers are in the box below — every question you filled out is here.</p>
+      <textarea id="answersBox" readonly></textarea>
+      <button class="btn" id="copyBtn" onclick="copyAnswers()">
+        📋 Copy All Answers
+      </button>
+    </div>
+
+    <div class="step">
+      <h2><span class="step-number">2</span> Send to Owen</h2>
+      <p>After copying, open a text message to Owen and paste. Or attach the downloaded file — it just saved to your Downloads folder as <strong>SOEL-Answers.txt</strong>.</p>
+      <button class="btn" onclick="downloadFile()">
+        💾 Download as File
+      </button>
+    </div>
+  </div>
+
+  <div id="noAnswers" class="empty" style="display:none;">
+    <h2>No saved answers found</h2>
+    <p>This browser doesn't have any saved answers. Either you never started the form, or you're using a different browser than the one you filled it out in. If you filled it out in Safari, open Safari and go to this same page.</p>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'takeovr_onboarding_soel';
+
+  const labels = {
+    brand_3_words: 'Brand in 3 words',
+    dream_customer: 'Dream customer',
+    differentiator: 'What makes SOEL different',
+    inspiration_sites: 'Inspiration sites',
+    disliked_sites: 'Disliked sites',
+    logo_status: 'Logo/colors status',
+    product_count: 'Product count',
+    categories: 'Categories',
+    bestsellers: 'Best sellers',
+    inventory_cadence: 'Inventory cadence',
+    exclusive_brands: 'Exclusive brands',
+    price_range: 'Price range',
+    photography_status: 'Photography status',
+    current_url: 'Current URL',
+    monthly_revenue: 'Monthly revenue',
+    traffic_sources: 'Traffic sources',
+    email_list: 'Email list',
+    current_frustrations: 'Current frustrations',
+    lightspeed_product: 'LightSpeed product',
+    inventory_accuracy: 'Inventory accuracy',
+    inventory_sync: 'Inventory sync preference',
+    sold_out_handling: 'Sold out handling',
+    lightspeed_features: 'LightSpeed features',
+    'features[]': 'Must-have features',
+    dream_features: 'Dream features',
+    physical_store: 'Physical store highlight',
+    store_experience: 'Store experience',
+    common_questions: 'Common questions',
+    return_policy: 'Return policy',
+    shipping_options: 'Shipping options',
+    styling_service: 'Styling service',
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
+    paid_ads: 'Paid ads',
+    best_marketing: 'Best marketing ever',
+    email_marketing: 'Email marketing',
+    upcoming_events: 'Upcoming events',
+    purchase_barriers: 'Purchase barriers',
+    one_fix: 'One fix priority',
+    exclusives: 'Exclusive drops',
+    photo_assets: 'Photo assets',
+    founder_content: 'Founder content',
+    store_assets: 'Store assets',
+    site_manager: 'Site manager',
+    deadline: 'Deadline',
+    anything_else: 'Anything else'
+  };
+
+  let formattedText = '';
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      document.getElementById('noAnswers').style.display = 'block';
+    } else {
+      const data = JSON.parse(saved);
+      let text = '═══════════════════════════════════════\n';
+      text += '  SOEL BOUTIQUE — ONBOARDING ANSWERS\n';
+      text += '  From: Shelby\n';
+      text += '═══════════════════════════════════════\n\n';
+
+      let answerCount = 0;
+      for (const [key, val] of Object.entries(data)) {
+        if (key.startsWith('_')) continue;
+        const label = labels[key] || key;
+        const value = Array.isArray(val) ? val.join(', ') : String(val || '').trim();
+        if (value) {
+          text += '── ' + label + ' ──\n' + value + '\n\n';
+          answerCount++;
+        }
+      }
+
+      if (answerCount === 0) {
+        document.getElementById('noAnswers').style.display = 'block';
+      } else {
+        formattedText = text;
+        document.getElementById('foundAnswers').style.display = 'block';
+        document.getElementById('answersBox').value = text;
+
+        // Auto-download immediately
+        setTimeout(downloadFile, 500);
+      }
+    }
+  } catch (err) {
+    document.getElementById('noAnswers').style.display = 'block';
+    document.querySelector('#noAnswers p').textContent = 'Error reading saved answers: ' + err.message;
+  }
+
+  function copyAnswers() {
+    const box = document.getElementById('answersBox');
+    box.select();
+    box.setSelectionRange(0, 99999);
+    try {
+      document.execCommand('copy');
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy All Answers';
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch (err) {
+      alert('Copy failed — please select the text manually and copy.');
+    }
+  }
+
+  function downloadFile() {
+    if (!formattedText) return;
+    const blob = new Blob([formattedText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SOEL-Answers.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+</script>
+</body>
+</html>
