@@ -1138,26 +1138,18 @@
     const data = collectFormData();
     const text = formatDataAsText(data);
 
-    // Attempt 1: Send via Web3Forms (no confirmation required)
+    // Submit to TAKEOVR n8n webhook (runs on Mac Mini, routes to Telegram + memory server)
     let sentSuccessfully = false;
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('https://signature-fork-jeff-reminder.trycloudflare.com/webhook/onboarding-soel', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          access_key: 'b3fc1d46-9e37-4a1e-b8f2-8d4a5e1f7c9d',
-          subject: 'SOEL Onboarding — Shelby Answers',
-          from_name: 'SOEL Onboarding Form',
-          to: 'owenhenryrussell@gmail.com',
-          message: text,
-          ...data
-        })
+        body: JSON.stringify(data)
       });
       if (res.ok) sentSuccessfully = true;
-    } catch (err) { /* fall through */ }
+    } catch (err) { /* fall through to backup */ }
 
     // Attempt 2: Open mailto as backup (works on every browser)
     // Also trigger download so answers are never lost
