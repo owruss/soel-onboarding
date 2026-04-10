@@ -1134,46 +1134,86 @@
     URL.revokeObjectURL(url);
   }
 
-  // Form submission
+  // Show debug info directly on the page so we can see what's happening
+  function showStatus(message, isError) {
+    let statusEl = document.getElementById('submitStatus');
+    if (!statusEl) {
+      statusEl = document.createElement('div');
+      statusEl.id = 'submitStatus';
+      statusEl.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:16px 24px;border-radius:12px;max-width:90%;z-index:9999;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,0.3);';
+      document.body.appendChild(statusEl);
+    }
+    statusEl.style.background = isError ? '#8B2020' : '#1a1a1a';
+    statusEl.textContent = message;
+  }
+
+  // Form submission — BULLETPROOF version
   document.getElementById('onboardingForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const data = collectFormData();
-    const text = formatDataAsText(data);
+    showStatus('Sending your answers…');
 
-    // Submit to TAKEOVR n8n webhook (runs on Mac Mini, routes to Telegram + memory server)
-    let sentSuccessfully = false;
+    let data, text;
+    try {
+      data = collectFormData();
+      text = formatDataAsText(data);
+    } catch (err) {
+      showStatus('Error reading form: ' + err.message, true);
+      return;
+    }
+
+    // ALWAYS download backup first — guaranteed to save her answers locally
+    try {
+      downloadAnswers(data);
+    } catch (err) {
+      console.error('Download failed:', err);
+    }
+
+    // Try webhook
+    let webhookOk = false;
+    let webhookError = '';
     try {
       const res = await fetch('https://signature-fork-jeff-reminder.trycloudflare.com/webhook/onboarding-soel', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        mode: 'cors'
       });
-      if (res.ok) sentSuccessfully = true;
-    } catch (err) { /* fall through to backup */ }
+      if (res.ok) {
+        webhookOk = true;
+      } else {
+        webhookError = 'Server returned ' + res.status;
+      }
+    } catch (err) {
+      webhookError = err.message || 'Network error';
+    }
 
-    // Attempt 2: Open mailto as backup (works on every browser)
-    // Also trigger download so answers are never lost
-    downloadAnswers(data);
-
-    // Build mailto link
-    const mailtoBody = encodeURIComponent(text);
-    const mailtoLink = 'mailto:owenhenryrussell@gmail.com?subject=' + encodeURIComponent('SOEL Onboarding — Shelby Answers') + '&body=' + mailtoBody.slice(0, 1800);
-
-    // Show success with options
-    document.getElementById('onboardingForm').style.display = 'none';
-    document.getElementById('progressContainer').style.display = 'none';
-    const success = document.getElementById('successScreen');
-    success.classList.add('active');
-
-    // Add email fallback link to success screen
-    const emailBtn = document.getElementById('emailFallbackBtn');
-    if (emailBtn) emailBtn.href = mailtoLink;
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // DO NOT clear localStorage — keep as backup until Owen confirms receipt
+    if (webhookOk) {
+      // Success — show success screen
+      showStatus('✓ Sent successfully! Your answers also downloaded as backup.');
+      setTimeout(() => {
+        document.getElementById('onboardingForm').style.display = 'none';
+        document.getElementById('progressContainer').style.display = 'none';
+        document.getElementById('successScreen').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 800);
+    } else {
+      // Webhook failed but we have the downloaded file — guide her to text it to Owen
+      showStatus('Webhook failed (' + webhookError + '). Your answers downloaded — please text that file to Owen.', true);
+      // Still show success-ish screen with clear instructions
+      setTimeout(() => {
+        document.getElementById('onboardingForm').style.display = 'none';
+        document.getElementById('progressContainer').style.display = 'none';
+        const success = document.getElementById('successScreen');
+        success.classList.add('active');
+        // Update success screen to reflect the fallback path
+        const h2 = success.querySelector('h2');
+        const p = success.querySelector('p');
+        if (h2) h2.textContent = 'Your answers were saved';
+        if (p) p.innerHTML = 'A file with all your answers just downloaded to your computer. <br><br><strong>Please text or email that file to Owen</strong> — he\'ll take it from there.';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 1500);
+    }
   });
 
   // Sticky shadow on scroll
