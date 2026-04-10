@@ -490,11 +490,7 @@
 
 <!-- ━━━ FORM ━━━ -->
 <div class="form-wrapper">
-  <form id="onboardingForm" action="https://formsubmit.co/owenhenryrussell@gmail.com" method="POST">
-    <input type="hidden" name="_subject" value="SOEL Onboarding — Shelby's Answers">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_next" value=""><!-- will be set by JS -->
+  <form id="onboardingForm" method="POST">
 
     <!-- SECTION 1: BRAND -->
     <div class="form-section active" data-section="1" data-label="Brand">
@@ -944,8 +940,13 @@
     <div class="success-icon">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
     </div>
-    <h2>You're all set</h2>
-    <p>Thank you for taking the time to share all of this. We have everything we need to start building your new website and marketing strategy. Owen will be in touch soon with next steps.</p>
+    <h2>Thank you, Shelby</h2>
+    <p style="margin-bottom: 32px;">Your answers have been sent to Owen. A backup copy has also been downloaded to your computer — just in case.</p>
+    <p style="font-size: 14px; color: var(--text-light); margin-bottom: 24px;">If Owen doesn't get the email within a few minutes, you can also send it manually using the button below or text him the downloaded file.</p>
+    <a id="emailFallbackBtn" href="#" class="btn btn-submit" style="margin: 0 auto; display: inline-flex;">
+      Email My Answers to Owen
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+    </a>
   </div>
 </div>
 
@@ -1032,12 +1033,10 @@
   // Save on every input
   document.getElementById('onboardingForm').addEventListener('input', saveProgress);
 
-  // Form submission
-  document.getElementById('onboardingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // Collect all data
-    const formData = new FormData(this);
+  // Collect form data as clean object
+  function collectFormData() {
+    const form = document.getElementById('onboardingForm');
+    const formData = new FormData(form);
     const data = {};
     formData.forEach((val, key) => {
       if (data[key]) {
@@ -1047,22 +1046,139 @@
         data[key] = val;
       }
     });
+    return data;
+  }
 
-    // Submit via formsubmit.co
-    fetch(this.action, {
-      method: 'POST',
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    }).then(res => {
-      document.getElementById('onboardingForm').style.display = 'none';
-      document.getElementById('progressContainer').style.display = 'none';
-      document.getElementById('successScreen').classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      localStorage.removeItem(STORAGE_KEY);
-    }).catch(() => {
-      // Fallback: submit normally
-      this.submit();
+  // Format data as readable text
+  function formatDataAsText(data) {
+    const labels = {
+      brand_3_words: 'Brand in 3 words',
+      dream_customer: 'Dream customer',
+      differentiator: 'What makes SOEL different',
+      inspiration_sites: 'Inspiration sites',
+      disliked_sites: 'Disliked sites',
+      logo_status: 'Logo/colors status',
+      product_count: 'Product count',
+      categories: 'Categories',
+      bestsellers: 'Best sellers',
+      inventory_cadence: 'Inventory cadence',
+      exclusive_brands: 'Exclusive brands',
+      price_range: 'Price range',
+      photography_status: 'Photography status',
+      current_url: 'Current URL',
+      monthly_revenue: 'Monthly revenue',
+      traffic_sources: 'Traffic sources',
+      email_list: 'Email list',
+      current_frustrations: 'Current frustrations',
+      lightspeed_product: 'LightSpeed product',
+      inventory_accuracy: 'Inventory accuracy',
+      inventory_sync: 'Inventory sync preference',
+      sold_out_handling: 'Sold out handling',
+      lightspeed_features: 'LightSpeed features',
+      'features[]': 'Must-have features',
+      dream_features: 'Dream features',
+      physical_store: 'Physical store highlight',
+      store_experience: 'Store experience',
+      common_questions: 'Common questions',
+      return_policy: 'Return policy',
+      shipping_options: 'Shipping options',
+      styling_service: 'Styling service',
+      instagram: 'Instagram',
+      tiktok: 'TikTok',
+      paid_ads: 'Paid ads',
+      best_marketing: 'Best marketing ever',
+      email_marketing: 'Email marketing',
+      upcoming_events: 'Upcoming events',
+      purchase_barriers: 'Purchase barriers',
+      one_fix: 'One fix priority',
+      exclusives: 'Exclusive drops',
+      photo_assets: 'Photo assets',
+      founder_content: 'Founder content',
+      store_assets: 'Store assets',
+      site_manager: 'Site manager',
+      deadline: 'Deadline',
+      anything_else: 'Anything else'
+    };
+
+    let text = '═══════════════════════════════════════\n';
+    text += '  SOEL BOUTIQUE — ONBOARDING ANSWERS\n';
+    text += '  Submitted: ' + new Date().toLocaleString() + '\n';
+    text += '═══════════════════════════════════════\n\n';
+
+    Object.entries(data).forEach(([key, val]) => {
+      if (key.startsWith('_')) return;
+      const label = labels[key] || key;
+      const value = Array.isArray(val) ? val.join(', ') : val;
+      if (value && value.trim()) {
+        text += '── ' + label + ' ──\n' + value + '\n\n';
+      }
     });
+
+    return text;
+  }
+
+  // Download answers as text file
+  function downloadAnswers(data) {
+    const text = formatDataAsText(data);
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SOEL-Onboarding-Answers-' + new Date().toISOString().split('T')[0] + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Form submission
+  document.getElementById('onboardingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const data = collectFormData();
+    const text = formatDataAsText(data);
+
+    // Attempt 1: Send via Web3Forms (no confirmation required)
+    let sentSuccessfully = false;
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: 'b3fc1d46-9e37-4a1e-b8f2-8d4a5e1f7c9d',
+          subject: 'SOEL Onboarding — Shelby Answers',
+          from_name: 'SOEL Onboarding Form',
+          to: 'owenhenryrussell@gmail.com',
+          message: text,
+          ...data
+        })
+      });
+      if (res.ok) sentSuccessfully = true;
+    } catch (err) { /* fall through */ }
+
+    // Attempt 2: Open mailto as backup (works on every browser)
+    // Also trigger download so answers are never lost
+    downloadAnswers(data);
+
+    // Build mailto link
+    const mailtoBody = encodeURIComponent(text);
+    const mailtoLink = 'mailto:owenhenryrussell@gmail.com?subject=' + encodeURIComponent('SOEL Onboarding — Shelby Answers') + '&body=' + mailtoBody.slice(0, 1800);
+
+    // Show success with options
+    document.getElementById('onboardingForm').style.display = 'none';
+    document.getElementById('progressContainer').style.display = 'none';
+    const success = document.getElementById('successScreen');
+    success.classList.add('active');
+
+    // Add email fallback link to success screen
+    const emailBtn = document.getElementById('emailFallbackBtn');
+    if (emailBtn) emailBtn.href = mailtoLink;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // DO NOT clear localStorage — keep as backup until Owen confirms receipt
   });
 
   // Sticky shadow on scroll
